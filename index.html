@@ -1,0 +1,55 @@
+
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>صوت الدارجة</title>
+<style>
+body{font-family:Arial,sans-serif;background:#f0f5ff;color:#17315c;margin:0;padding:20px}
+main{max-width:600px;margin:30px auto;background:white;padding:22px;border-radius:20px;box-shadow:0 4px 20px #ccd8ee}
+h1{text-align:center;color:#155eef}
+p{line-height:1.8}
+textarea{width:100%;height:180px;box-sizing:border-box;padding:14px;border:1px solid #b9cbed;border-radius:12px;font-size:18px;line-height:1.8}
+button{padding:13px;margin-top:10px;border:0;border-radius:10px;background:#155eef;color:white;font-size:16px;cursor:pointer}
+#stop{background:#526783}
+#status{line-height:1.8;color:#526783}
+</style>
+</head>
+<body>
+<main>
+<h1>🎙️ صوت الدارجة</h1>
+<p>كتب النص بالدارجة المغربية واضغط على تشغيل الصوت.</p>
+<textarea id="txt" placeholder="السلام عليكم، كيدايرين؟ نتمنى تكونو بخير..."></textarea>
+<br>
+<button onclick="play()">▶️ شغّل الصوت</button>
+<button onclick="pauseVoice()">⏸️ توقيف مؤقت / متابعة</button>
+<button id="stop" onclick="stopVoice()">⏹️ إيقاف</button>
+<p id="status">مرحبا بك فصوت الدارجة!</p>
+</main>
+<script>
+function play(){
+ const t=document.getElementById('txt').value.trim();
+ if(!t){document.getElementById('status').textContent='كتب النص الأول.';return}
+ if(!('speechSynthesis' in window)){document.getElementById('status').textContent='المتصفح لا يدعم الصوت.';return}
+ speechSynthesis.cancel();
+ const u=new SpeechSynthesisUtterance(t);
+ u.lang='ar-MA';u.rate=0.85;
+ const v=speechSynthesis.getVoices().find(x=>x.lang.toLowerCase().startsWith('ar'));
+ if(v)u.voice=v;
+ u.onstart=()=>document.getElementById('status').textContent='الصوت خدام...';
+ u.onend=()=>document.getElementById('status').textContent='سالينا قراءة النص.';
+ u.onerror=()=>document.getElementById('status').textContent='وقع مشكل فالصوت. جرّب مرة أخرى.';
+ speechSynthesis.speak(u);
+}
+function pauseVoice(){
+ if(speechSynthesis.paused)speechSynthesis.resume();
+ else speechSynthesis.pause();
+}
+function stopVoice(){
+ speechSynthesis.cancel();
+ document.getElementById('status').textContent='توقف الصوت.';
+}
+</script>
+</body>
+</html>
